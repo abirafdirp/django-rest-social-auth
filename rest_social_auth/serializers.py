@@ -3,6 +3,8 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 
+from kompres2015.region.models import District
+
 
 class OAuth2InputSerializer(serializers.Serializer):
     provider = serializers.CharField(required=False)
@@ -18,11 +20,12 @@ class OAuth1InputSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    district = serializers.HyperlinkedRelatedField(source="userprofile.district", view_name='district-detail',
+                                                   queryset=District.objects.all())
 
     class Meta:
         model = get_user_model()
-        exclude = ('is_staff', 'is_active', 'date_joined', 'password',
-            'last_login', 'user_permissions', 'groups', 'is_superuser')
+        fields = ('id', 'username', 'first_name', 'reports', 'district', 'token')
 
 
 class TokenSerializer(serializers.Serializer):
